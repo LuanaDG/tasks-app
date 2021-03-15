@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, ImageBackground, StyleSheet, FlatList, TouchableOpacity, Platform } from 'react-native'
+import { View, Text, ImageBackground, StyleSheet, FlatList, TouchableOpacity, Platform, Alert } from 'react-native'
 import todayImage from '../../assets/assets/imgs/today.jpg'
 import moment from 'moment'
 import 'moment/locale/pt-br'
@@ -63,18 +63,36 @@ export default class TaskList extends Component {
         this.setState({ tasks }, this.filterTasks)
     }
 
+    addTask = (newTask) => {
+        if (!newTask.desc || !newTask.desc.trim()) {
+            Alert.alert('Dados Insuficientes', 'Descrição não informada!')
+            return
+        }
+
+        const tasks = [...this.state.tasks]
+        tasks.push({
+            id: Math.random(),
+            desc: newTask.desc,
+            estimateAt: newTask.date,
+            doneAt: null
+        })
+        this.setState({ tasks, showAddTask: false }, this.filterTasks)
+    }
+
     render() {
 
-        const today = moment().locale('pt-br').format('ddd, D [de] MMMM')
+        const today = moment().locale('pt-br').format('dddd, D [de] MMMM')
 
         return (
             <View style={styles.container}>
-                <AddTask isVisible={this.state.showAddTask} onCancel={this.onCancel} />
+                <AddTask isVisible={this.state.showAddTask}
+                    onCancel={this.onCancel}
+                    onSave={this.addTask} />
                 <ImageBackground source={todayImage} style={styles.background}>
                     <View style={styles.iconBar}>
                         <TouchableOpacity onPress={this.toggleFilter}>
                             <Icon name={this.state.showDoneTasks ? 'eye' : 'eye-slash'}
-                                size={20} color={commonStyles.colors.secondary} />
+                                size={30} color={commonStyles.colors.secondary} />
                         </TouchableOpacity>
                     </View>
                     <View style={styles.titleBar}>
