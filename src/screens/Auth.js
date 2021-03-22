@@ -10,8 +10,8 @@ import { server, shoowError, showError, showSuccess } from '../common'
 
 const initialState = {
     name: '',
-    email: '',
-    password: '',
+    email: 'luana@gmail.com',
+    password: '123456',
     confirmPassword: '',
     stageNew: false
 }
@@ -54,7 +54,7 @@ export default class Auth extends Component {
             })
 
             axios.defaults.headers.common['Authorization'] = `bearer ${res.data.token}`
-            this.props.navigation.navigate('Home')
+            this.props.navigation.navigate('Home', res.data)
         } catch (e) {
             showError(e)
         }
@@ -70,9 +70,10 @@ export default class Auth extends Component {
 
         if (this.state.stageNew) {
             validations.push(this.state.name && this.state.name.trim().length >= 3)
-            validations.push(this.state.confirmPassword)
             validations.push(this.state.password === this.state.confirmPassword)
         }
+
+        const validForm = validations.reduce((t, a) => t && a)
 
 
         return (
@@ -105,8 +106,8 @@ export default class Auth extends Component {
                             style={styles.input}
                             onChangeText={confirmPassword => this.setState({ confirmPassword })} />
                     }
-                    <TouchableOpacity onPress={this.signinOrSignup}>
-                        <View style={styles.button}>
+                    <TouchableOpacity onPress={this.signinOrSignup} disable={!validForm} >
+                        <View style={[styles.button, validForm ? {} : { backgroundColor: '#AAA' }]}>
                             <Text style={styles.buttonText}>
                                 {this.state.stageNew ? 'Registrar' : 'Entrar'}
                             </Text>
